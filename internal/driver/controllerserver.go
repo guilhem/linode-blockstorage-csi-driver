@@ -387,6 +387,11 @@ func (cs *ControllerServer) ListVolumes(ctx context.Context, req *csi.ListVolume
 		})
 	}
 
+	// Only set nextToken if we got a full page and there might be more
+	if req.GetMaxEntries() > 0 && len(volumes) >= listOpts.PageSize {
+		nextToken = strconv.Itoa(listOpts.Page + 1)
+	}
+
 	resp := &csi.ListVolumesResponse{
 		Entries:   entries,
 		NextToken: nextToken,
