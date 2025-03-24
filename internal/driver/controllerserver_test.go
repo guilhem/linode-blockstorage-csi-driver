@@ -437,8 +437,10 @@ func TestControllerExpandVolume(t *testing.T) {
 			},
 			expectLinodeClientCalls: func(m *mocks.MockLinodeClient) {
 				m.EXPECT().GetVolume(gomock.Any(), gomock.Any()).Return(&linodego.Volume{ID: 1001, LinodeID: createLinodeID(1003), Size: 10, Status: linodego.VolumeActive}, nil)
+				m.EXPECT().ResizeVolume(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+				m.EXPECT().WaitForVolumeStatus(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(&linodego.Volume{ID: 1001, Size: 10, Status: linodego.VolumeActive}, nil)
 			},
-			expectedError: errVolumeInUse,
+			expectedError: nil,
 		},
 		{
 			name: "expandvolume",
