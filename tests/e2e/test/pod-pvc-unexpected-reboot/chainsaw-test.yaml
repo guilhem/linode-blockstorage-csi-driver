@@ -171,3 +171,9 @@ spec:
         - describe:
             apiVersion: v1
             kind: Pod
+            name: redis-test-0
+            namespace: ($namespace)
+        - describe:
+            apiVersion: v1
+            kind: PersistentVolumeClaim
+            namespace: ($namespace)

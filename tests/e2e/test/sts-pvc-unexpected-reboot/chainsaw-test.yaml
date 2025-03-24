@@ -148,5 +148,11 @@ spec:
               (contains($stdout, 'testfile')): true
       catch:
         - describe:
-            apiVersion: apps/v1
-            kind: StatefulSet
+            apiVersion: v1
+            kind: Pod
+            name: redis-test-0
+            namespace: ($namespace)
+        - describe:
+            apiVersion: v1
+            kind: PersistentVolumeClaim
+            namespace: ($namespace)
