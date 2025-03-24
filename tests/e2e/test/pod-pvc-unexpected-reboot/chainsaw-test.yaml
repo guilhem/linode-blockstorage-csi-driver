@@ -129,7 +129,7 @@ spec:
         - wait:
             apiVersion: v1
             kind: Node
-            timeout: 120s
+            timeout: 5m
             name: ($nodeName)
             for:
               condition:
