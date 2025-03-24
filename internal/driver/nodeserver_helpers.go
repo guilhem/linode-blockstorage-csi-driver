@@ -423,11 +423,11 @@ func (ns *NodeServer) getDeviceSize(devicePath string) (uint64, error) {
 	output, err := ns.mounter.Exec.Command("blockdev", "--getsize64", devicePath).CombinedOutput()
 	outStr := strings.TrimSpace(string(output))
 	if err != nil {
-		return 0, fmt.Errorf("failed to read size of device %s: %s: %s", devicePath, err, outStr)
+		return 0, fmt.Errorf("failed to read size of device %s: %w: %s", devicePath, err, outStr)
 	}
 	size, err := strconv.ParseUint(outStr, 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("failed to parse size of device %s %s: %s", devicePath, outStr, err)
+		return 0, fmt.Errorf("failed to parse size of device %s %s: %w", devicePath, outStr, err)
 	}
 	return size, nil
 }
