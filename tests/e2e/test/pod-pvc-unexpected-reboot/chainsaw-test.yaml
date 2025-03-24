@@ -171,7 +171,7 @@ spec:
         - describe:
             apiVersion: v1
             kind: Pod
-            name: redis-test-0
+            name: e2e-pod
             namespace: ($namespace)
         - describe:
             apiVersion: v1
