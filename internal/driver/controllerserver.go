@@ -267,7 +267,7 @@ func (cs *ControllerServer) ControllerUnpublishVolume(ctx context.Context, req *
 	if linodego.IsNotFound(err) {
 		observability.RecordMetrics(observability.ControllerUnpublishVolumeTotal, observability.ControllerUnpublishVolumeDuration, observability.Failed, functionStartTime)
 		log.V(4).Info("Volume not found, skipping")
-		return &csi.ControllerUnpublishVolumeResponse{}, nil
+		return &csi.ControllerUnpublishVolumeResponse{}, errNotFound("get volume %d: %v", volumeID, err)
 	} else if err != nil {
 		observability.RecordMetrics(observability.ControllerUnpublishVolumeTotal, observability.ControllerUnpublishVolumeDuration, observability.Failed, functionStartTime)
 		return &csi.ControllerUnpublishVolumeResponse{}, errInternal("get volume %d: %v", volumeID, err)
@@ -409,7 +409,8 @@ func (cs *ControllerServer) ListVolumes(ctx context.Context, req *csi.ListVolume
 		NextToken: nextToken,
 	}
 
-	log.V(2).Info("Volumes listed", "response", resp)
+	log.V(2).Info("Volumes listed")
+	log.V(6).Info("Volumes listed", "response", resp)
 	return resp, nil
 }
 
@@ -461,11 +462,6 @@ func (cs *ControllerServer) ControllerExpandVolume(ctx context.Context, req *csi
 		return resp, errNotFound("get volume: %v", err)
 	}
 
-	// Check if the volume is already monted to a Linode
-	if vol.LinodeID != nil {
-		return resp, errVolumeInUse
-	}
-
 	// Is the caller trying to resize the volume to be smaller than it currently is?
 	if vol.Size > bytesToGB(size) {
 		return resp, errResizeDown
@@ -488,7 +484,7 @@ func (cs *ControllerServer) ControllerExpandVolume(ctx context.Context, req *csi
 	log.V(2).Info("Volume resized successfully", "volume_id", volumeID)
 	resp = &csi.ControllerExpandVolumeResponse{
 		CapacityBytes:         size,
-		NodeExpansionRequired: false,
+		NodeExpansionRequired: true,
 	}
 	return resp, nil
 }
