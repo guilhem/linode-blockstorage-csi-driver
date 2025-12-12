@@ -226,7 +226,7 @@ func TestNodeServer_findDevicePath(t *testing.T) {
 				dUtils.EXPECT().VerifyDevicePath(gomock.Any()).Return("", nil)
 			},
 			wantDevicePath: "",
-			wantErr:        errInternal("Unable to find device path out of attempted paths: [some/path]"),
+			wantErr:        errNotFound("volume not attached to node: device path not found (attempted paths: %v)", []string{"some/path"}),
 		},
 		{
 			name: "Success",

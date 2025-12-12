@@ -177,9 +177,11 @@ func (ns *NodeServer) findDevicePath(ctx context.Context, key linodevolumes.Lino
 		return "", errInternal("Error verifying Linode Volume (%q) is attached: %v", key.GetVolumeLabel(), err)
 	}
 
-	// If no device path is found, return an error.
+	// If no device path is found, return FailedPrecondition to signal that the volume
+	// is not attached to the node. This allows Kubernetes to trigger a re-attach
+	// via ControllerPublishVolume instead of retrying NodeStageVolume indefinitely.
 	if devicePath == "" {
-		return "", errInternal("Unable to find device path out of attempted paths: %v", devicePaths)
+		return "", errNotFound("volume not attached to node: device path not found (attempted paths: %v)", devicePaths)
 	}
 
 	// If a device path is found, return it.
